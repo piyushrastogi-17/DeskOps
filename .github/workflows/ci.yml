@@ -1,0 +1,69 @@
+
+name: DeskOps CI
+
+on:
+  push:
+    branches:
+      - Piyush-Rastogi
+  pull_request:
+    branches:
+      - Piyush-Rastogi
+
+jobs:
+  backend:
+    name: Backend Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Backend
+        run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: Backend
+        run: npx prisma generate
+
+      - name: TypeScript check
+        working-directory: Backend
+        run: npm run typecheck
+
+      - name: Build backend
+        working-directory: Backend
+        run: npm run build
+
+  frontend:
+    name: Frontend Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: Frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: Frontend
+        run: npm run build

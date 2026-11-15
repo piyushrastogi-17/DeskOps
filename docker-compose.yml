@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: deskops-db
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    ports:
+      - "5433:5432"
+    volumes:
+      - deskops_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deskops -d deskops_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./Backend
+    container_name: deskops-backend
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      DATABASE_URL: postgresql://deskops:deskops_local_only@db:5432/deskops_db?schema=public
+      CLIENT_URL: http://localhost:3000
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        VITE_API_URL: http://localhost:5000
+    container_name: deskops-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  deskops_postgres_data:

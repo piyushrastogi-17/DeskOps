@@ -54,3 +54,9 @@ temp/
 playwright-report/
 test-results/
 *.tsbuildinfo
+
+
+Backend/.agents/
+Backend/.claude/
+Backend/.cursor/
+Backend/.devin/
