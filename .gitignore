@@ -7,6 +7,7 @@ node_modules/
 .env.*
 !.env.example
 
+
 # Logs
 logs/
 *.log
@@ -41,3 +42,15 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+
+# Docker local environment
+.env.docker
+
+# Tool caches and test reports
+.vite/
+.cache/
+.turbo/
+playwright-report/
+test-results/
+*.tsbuildinfo
